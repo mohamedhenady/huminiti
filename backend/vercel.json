@@ -1,5 +1,5 @@
 {
-  "rewrite": [
+  "rewrites": [
     { "source": "/api/(.*)", "destination": "/app/main.py" }
   ],
   "functions": {
