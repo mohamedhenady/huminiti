@@ -1,0 +1,20 @@
+packages:
+  "framer-motion": "For premium page transitions and micro-interactions"
+  "xlsx": "For reading Excel files in the browser before sending data to the server"
+  "date-fns": "For formatting timestamps"
+  "clsx": "Utility for conditionally combining classes"
+  "tailwind-merge": "Utility for merging tailwind classes to avoid conflicts"
+  "@hookform/resolvers": "Zod resolver for forms"
+  "react-hook-form": "Form state management"
+  "zod": "Schema validation"
+  "sonner": "Premium toast notifications"
+
+images:
+  - path: "artifacts/saawi-pharmacy/public/images/medical-bg.png"
+    description: "A clean, modern, slightly abstract medical background with soft blue and teal tones, pharmaceutical elements faintly visible, highly professional and suitable for a login screen backdrop."
+    aspect_ratio: "16:9"
+
+notes:
+  - The entire application layout is strictly RTL (Right-to-Left) in Arabic.
+  - Orval generated TanStack Query hooks from @workspace/api-client-react are used for API calls.
+  - Custom customFetch implementation is assumed to handle authentication via cookies, but we also save the user token in localStorage to manage client-side route protection.

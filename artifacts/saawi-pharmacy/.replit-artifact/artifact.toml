@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "نظام إدارة دفعات الأدوية"
+version = "1.0.0"
+id = "artifacts/saawi-pharmacy"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 19816
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/saawi-pharmacy run dev"
+
+[services.env]
+PORT = "19816"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/saawi-pharmacy", "run", "build"]
+publicDir = "artifacts/saawi-pharmacy/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

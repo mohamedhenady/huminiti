@@ -1,22 +1,30 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: API specification for Al-Saawi Pharmacy Drug Batch Management System
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: batches
+    description: Batch management operations
+  - name: persons
+    description: Person management operations
+  - name: drugs
+    description: Drug management operations
+  - name: records
+    description: Drug record operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +32,409 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /batches:
+    get:
+      operationId: getBatches
+      tags: [batches]
+      summary: Get all batches
+      responses:
+        "200":
+          description: List of batches
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchListResponse"
+    post:
+      operationId: createBatch
+      tags: [batches]
+      summary: Create a new batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBatchRequest"
+      responses:
+        "201":
+          description: Batch created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Batch"
+
+  /batches/{batchId}:
+    get:
+      operationId: getBatch
+      tags: [batches]
+      summary: Get batch by ID
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Batch details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateBatch
+      tags: [batches]
+      summary: Update batch
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBatchRequest"
+      responses:
+        "200":
+          description: Batch updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Batch"
+
+  /batches/{batchId}/persons:
+    get:
+      operationId: getBatchPersons
+      tags: [persons]
+      summary: Get persons in a batch
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, complete, incomplete]
+      responses:
+        "200":
+          description: List of persons
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonListResponse"
+    post:
+      operationId: createPerson
+      tags: [persons]
+      summary: Add person to batch
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePersonRequest"
+      responses:
+        "201":
+          description: Person created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+
+  /batches/{batchId}/import:
+    post:
+      operationId: importBatchData
+      tags: [batches]
+      summary: Import batch data from Excel
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportRequest"
+      responses:
+        "200":
+          description: Data imported
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportResponse"
+
+  /persons/{personId}:
+    get:
+      operationId: getPerson
+      tags: [persons]
+      summary: Get person by ID
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Person details with records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updatePerson
+      tags: [persons]
+      summary: Update person
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePersonRequest"
+      responses:
+        "200":
+          description: Person updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+
+  /persons/{personId}/complete:
+    post:
+      operationId: completePerson
+      tags: [persons]
+      summary: Mark person as received (is_complete = true)
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Person marked as complete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+
+  /records/{recordId}:
+    put:
+      operationId: updateRecord
+      tags: [records]
+      summary: Update drug record status
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRecordRequest"
+      responses:
+        "200":
+          description: Record updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Record"
+
+  /drugs:
+    get:
+      operationId: getDrugs
+      tags: [drugs]
+      summary: Get all drugs
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, local, imported]
+      responses:
+        "200":
+          description: List of drugs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DrugListResponse"
+    post:
+      operationId: createDrug
+      tags: [drugs]
+      summary: Create a new drug
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDrugRequest"
+      responses:
+        "201":
+          description: Drug created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Drug"
+
+  /drugs/{drugId}:
+    put:
+      operationId: updateDrug
+      tags: [drugs]
+      summary: Update drug
+      parameters:
+        - name: drugId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDrugRequest"
+      responses:
+        "200":
+          description: Drug updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Drug"
+    delete:
+      operationId: deleteDrug
+      tags: [drugs]
+      summary: Delete drug
+      parameters:
+        - name: drugId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Drug deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [batches]
+      summary: Get overall statistics
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +445,429 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        role:
+          type: string
+          enum: [pharmacy, humanity]
+        displayName:
+          type: string
+      required:
+        - id
+        - username
+        - role
+        - displayName
+
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+      required:
+        - user
+        - token
+
+    Batch:
+      type: object
+      properties:
+        batch_id:
+          type: integer
+        batch_name:
+          type: string
+        is_complete:
+          type: boolean
+        persons_count:
+          type: integer
+        complete_count:
+          type: integer
+        total_cost_before:
+          type: number
+        total_cost_after:
+          type: number
+      required:
+        - batch_id
+        - batch_name
+        - is_complete
+        - persons_count
+        - complete_count
+        - total_cost_before
+        - total_cost_after
+
+    BatchDetail:
+      type: object
+      properties:
+        batch_id:
+          type: integer
+        batch_name:
+          type: string
+        is_complete:
+          type: boolean
+        persons_count:
+          type: integer
+        complete_count:
+          type: integer
+        total_cost_before:
+          type: number
+        total_cost_after:
+          type: number
+      required:
+        - batch_id
+        - batch_name
+        - is_complete
+        - persons_count
+        - complete_count
+        - total_cost_before
+        - total_cost_after
+
+    BatchListResponse:
+      type: object
+      properties:
+        batches:
+          type: array
+          items:
+            $ref: "#/components/schemas/Batch"
+      required:
+        - batches
+
+    CreateBatchRequest:
+      type: object
+      properties:
+        batch_name:
+          type: string
+      required:
+        - batch_name
+
+    UpdateBatchRequest:
+      type: object
+      properties:
+        batch_name:
+          type: string
+        is_complete:
+          type: boolean
+
+    Person:
+      type: object
+      properties:
+        person_id:
+          type: integer
+        full_name:
+          type: string
+        ph_number:
+          type: string
+        location:
+          type: string
+        batch_id:
+          type: integer
+        is_complete:
+          type: boolean
+        total_cost:
+          type: number
+        inv_number:
+          type: string
+        ordered_count:
+          type: integer
+        prepared_count:
+          type: integer
+        ready_count:
+          type: integer
+        total_drugs:
+          type: integer
+      required:
+        - person_id
+        - full_name
+        - ph_number
+        - location
+        - is_complete
+        - total_cost
+        - inv_number
+        - ordered_count
+        - prepared_count
+        - ready_count
+        - total_drugs
+
+    PersonDetail:
+      type: object
+      properties:
+        person_id:
+          type: integer
+        full_name:
+          type: string
+        ph_number:
+          type: string
+        location:
+          type: string
+        batch_id:
+          type: integer
+        batch_name:
+          type: string
+        is_complete:
+          type: boolean
+        total_cost:
+          type: number
+        inv_number:
+          type: string
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecordWithDrug"
+      required:
+        - person_id
+        - full_name
+        - ph_number
+        - location
+        - is_complete
+        - total_cost
+        - inv_number
+        - records
+
+    PersonListResponse:
+      type: object
+      properties:
+        persons:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+      required:
+        - persons
+
+    CreatePersonRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+        ph_number:
+          type: string
+        location:
+          type: string
+        inv_number:
+          type: string
+        drugs:
+          type: array
+          items:
+            type: integer
+      required:
+        - full_name
+        - ph_number
+        - location
+        - inv_number
+
+    UpdatePersonRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+        ph_number:
+          type: string
+        location:
+          type: string
+        inv_number:
+          type: string
+
+    Drug:
+      type: object
+      properties:
+        drug_id:
+          type: integer
+        ar_name:
+          type: string
+        en_name:
+          type: string
+        price:
+          type: number
+        local_or_not:
+          type: boolean
+      required:
+        - drug_id
+        - ar_name
+        - en_name
+        - price
+        - local_or_not
+
+    DrugListResponse:
+      type: object
+      properties:
+        drugs:
+          type: array
+          items:
+            $ref: "#/components/schemas/Drug"
+      required:
+        - drugs
+
+    CreateDrugRequest:
+      type: object
+      properties:
+        ar_name:
+          type: string
+        en_name:
+          type: string
+        price:
+          type: number
+        local_or_not:
+          type: boolean
+      required:
+        - ar_name
+        - en_name
+        - price
+        - local_or_not
+
+    UpdateDrugRequest:
+      type: object
+      properties:
+        ar_name:
+          type: string
+        en_name:
+          type: string
+        price:
+          type: number
+        local_or_not:
+          type: boolean
+
+    Record:
+      type: object
+      properties:
+        record_id:
+          type: integer
+        drug_id:
+          type: integer
+        person_id:
+          type: integer
+        batch_id:
+          type: integer
+        final_price:
+          type: number
+        ordered:
+          type: boolean
+        prepared:
+          type: boolean
+        ready:
+          type: boolean
+        created_at:
+          type: string
+      required:
+        - record_id
+        - final_price
+        - ordered
+        - prepared
+        - ready
+        - created_at
+
+    RecordWithDrug:
+      type: object
+      properties:
+        record_id:
+          type: integer
+        drug_id:
+          type: integer
+        person_id:
+          type: integer
+        batch_id:
+          type: integer
+        final_price:
+          type: number
+        ordered:
+          type: boolean
+        prepared:
+          type: boolean
+        ready:
+          type: boolean
+        created_at:
+          type: string
+        drug:
+          $ref: "#/components/schemas/Drug"
+      required:
+        - record_id
+        - final_price
+        - ordered
+        - prepared
+        - ready
+        - created_at
+        - drug
+
+    UpdateRecordRequest:
+      type: object
+      properties:
+        ordered:
+          type: boolean
+        prepared:
+          type: boolean
+        ready:
+          type: boolean
+
+    StatsResponse:
+      type: object
+      properties:
+        total_batches:
+          type: integer
+        active_batches:
+          type: integer
+        complete_batches:
+          type: integer
+        total_persons:
+          type: integer
+      required:
+        - total_batches
+        - active_batches
+        - complete_batches
+        - total_persons
+
+    ImportRequest:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required:
+        - data
+
+    ImportResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        imported_count:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+        - success
+        - imported_count
