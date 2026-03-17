@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --font-cairo: var(--font-cairo);
+  
+  --color-primary: #1D6FA4;
+  --color-primary-hover: #1a5f8e;
+  --color-secondary: #27AE60;
+  --color-warning: #F39C12;
+  --color-danger: #E74C3C;
+  --color-background: #F4F6F9;
+  --color-card: #FFFFFF;
+  --color-text-primary: #2C3E50;
+  --color-text-secondary: #7F8C8D;
+  --color-border: #E0E6ED;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  direction: rtl;
+  font-family: var(--font-cairo), sans-serif;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+/* Utilities */
+.btn-primary {
+  @apply bg-primary text-white rounded-lg px-4 py-2 font-semibold hover:bg-primary-hover transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-outline {
+  @apply border border-primary text-primary rounded-lg px-4 py-2 font-semibold hover:bg-primary hover:text-white transition-colors cursor-pointer;
+}
+
+.card {
+  @apply bg-card rounded-xl border border-border shadow-sm;
+}
+
+.input {
+  @apply w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors;
+}
+
+.label {
+  @apply block text-sm font-semibold text-text-primary mb-1;
+}
