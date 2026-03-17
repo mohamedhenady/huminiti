@@ -1,0 +1,10 @@
+{
+  "rewrite": [
+    { "source": "/api/(.*)", "destination": "/app/main.py" }
+  ],
+  "functions": {
+    "app/main.py": {
+      "runtime": "vercel-python@0.1.0"
+    }
+  }
+}
