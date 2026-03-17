@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { AuthProvider } from "@/lib/auth-context";
 import AppLayout from "@/components/layout/AppLayout";
@@ -175,11 +175,12 @@ function PersonDetailContent({ batchId, personId }: { batchId: string; personId:
   );
 }
 
-export default function PersonDetailPage({ params }: { params: { id: string; pid: string } }) {
+export default function PersonDetailPage({ params }: { params: Promise<{ id: string; pid: string }> }) {
+  const { id, pid } = use(params);
   return (
     <AuthProvider>
       <AppLayout>
-        <PersonDetailContent batchId={params.id} personId={params.pid} />
+        <PersonDetailContent batchId={id} personId={pid} />
       </AppLayout>
     </AuthProvider>
   );

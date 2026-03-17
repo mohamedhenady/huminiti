@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { AuthProvider } from "@/lib/auth-context";
@@ -223,11 +223,12 @@ function BatchDetailContent({ batchId }: { batchId: string }) {
   );
 }
 
-export default function BatchDetailPage({ params }: { params: { id: string } }) {
+export default function BatchDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   return (
     <AuthProvider>
       <AppLayout>
-        <BatchDetailContent batchId={params.id} />
+        <BatchDetailContent batchId={id} />
       </AppLayout>
     </AuthProvider>
   );

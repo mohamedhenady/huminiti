@@ -27,4 +27,5 @@ async def login(data: LoginRequest):
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=401, detail="بيانات الدخول غلط")
+        print(f"Login error for {data.email}: {str(e)}")
+        raise HTTPException(status_code=401, detail="بيانات الدخول غلط أو الحساب غير نشط")
